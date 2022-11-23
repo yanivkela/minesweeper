@@ -77,3 +77,11 @@ td {
 button {
     padding:10px;
 }
+
+.lives {
+    position: absolute;
+    background-color: rgb(145, 145, 145);
+    height: 50px;
+    width: 150px;
+    font-size: 20px;
+}
