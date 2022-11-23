@@ -21,6 +21,7 @@ function initGame() {
   gGame.markedCount = 0
   gGame.secsPassed = 0
   gGame.lives = 3
+  document.querySelector('.lives').innerText = '❤️❤️❤️'
   elTimer = document.querySelector('.timer')
   elTimer.innerText = gGame.secsPassed
   var elSmiley = document.querySelector('.smiley')
@@ -90,35 +91,37 @@ function cellClicked(elCell, idx, jdx) {
   if (curCell.isMarked || curCell.isShown) return
   if (curCell.isMine) {
     if (gGame.lives > 0) {
-        elCell.innerText = '💣'
-        setTimeout((elCell) => {
-            elCell.innerText = ''
-        },2000, elCell)
-        gGame.lives--
-        var strLives = ''
-        for (var i = 0; i < gGame.lives; i++) {
-            strLives += '❤️'
-        }
-        document.querySelector('.lives').innerText = strLives
-        return
+      elCell.innerText = '💣'
+      setTimeout(
+        (elCell) => {
+          elCell.innerText = ''
+        },
+        2000,
+        elCell
+      )
+      gGame.lives--
+      var strLives = ''
+      for (var i = 0; i < gGame.lives; i++) {
+        strLives += '❤️'
+      }
+      document.querySelector('.lives').innerText = strLives
+      return
     } else {
-        for (var i = 0; i < gMines.length; i++) {
-          var loc = gMines[i]
-          var elCell = document.querySelector(`.cell-${loc.i}-${loc.j}`)
-          elCell.classList.add('shown')
-          var curCell = gBoard[loc.i][loc.j]
-          curCell.isShown = true
-          elCell.innerText = '💣'
-        }
-        gGame.isOn = false
-        elSmiley = document.querySelector('.smiley')
-        elSmiley.innerText = '🤯'
-        clearInterval(gTimeInterval)
-        // gameOver()
-        return
-
+      for (var i = 0; i < gMines.length; i++) {
+        var loc = gMines[i]
+        var elCell = document.querySelector(`.cell-${loc.i}-${loc.j}`)
+        elCell.classList.add('shown')
+        var curCell = gBoard[loc.i][loc.j]
+        curCell.isShown = true
+        elCell.innerText = '💣'
+      }
+      gGame.isOn = false
+      elSmiley = document.querySelector('.smiley')
+      elSmiley.innerText = '🤯'
+      clearInterval(gTimeInterval)
+      // gameOver()
+      return
     }
-
   }
   if (curCell.minesAroundCount) {
     curCell.isShown = true
@@ -199,6 +202,6 @@ function setDifficult(difficulty) {
 }
 
 function restartGame() {
-    clearInterval(gTimeInterval)
-    initGame()
+  clearInterval(gTimeInterval)
+  initGame()
 }
