@@ -1,0 +1,79 @@
+table {
+    margin: auto;
+    margin-top: 60px;
+    border: 5px solid black;
+}
+
+td {
+    height: 30px;
+    width: 30px;
+    border: 2px solid black;
+    background-color: rgb(208, 208, 208);
+    border-top: 2px solid rgb(232, 232, 232);
+    border-left: 2px solid rgb(190, 190, 190);
+}
+
+.shown {
+    background-color: rgb(188, 188, 188);
+    border: 2px solid black;
+}
+
+.container {
+    display: block;
+    background-color: rgb(145, 145, 145);
+    height: fit-content;
+    padding-bottom: 50px;
+    width: 500px;
+}
+
+.details {
+    background-color: rgb(194, 194, 194);
+    height: 100px;
+    position: relative;
+}
+
+.timer {
+    position: absolute;
+    background-color: black;
+    color: red;
+    text-align: center;
+    font-size: 50px;
+    height: 75px;
+    width: 100px;
+    top: 20px;
+    left:30px;
+}
+.flags-left {
+    position: absolute;
+    background-color: black;
+    color: red;
+    text-align: center;
+    font-size: 50px;
+    height: 75px;
+    width: 100px;
+    top: 20px;
+    right:30px;
+}
+
+.smiley {
+    position: absolute;
+    background-color: rgb(137, 137, 137);
+    height: 50px;
+    width: 50px;
+    left: 225px;
+    top: 25px;
+    font-size: 37px;
+    cursor: pointer;
+
+}
+
+.difficult {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(168, 168, 168);
+}
+
+button {
+    padding:10px;
+}
