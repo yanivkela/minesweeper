@@ -71,7 +71,7 @@ function getEmptyCell() {
   var emptyCells = []
   for (var i = 0; i < gBoard.length; i++) {
     for (var j = 0; j < gBoard[0].length; j++) {
-      if (gBoard[i][j].gameElement === null && gBoard[i][j].type === FLOOR) {
+      if (!gBoard[i][j].isMine && !gBoard[i][j].isShown && !gBoard[i][j].isMarked) {
         emptyCells.push({ i: i, j: j })
       }
     }

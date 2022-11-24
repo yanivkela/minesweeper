@@ -19,10 +19,14 @@
             <button onclick="setDifficult('medium')">Medium</button>
             <button onclick="setDifficult('extreme')">Extreme</button>
         </div>
-        <div class="lives">❤️❤️❤️</div>
+        <div class="lives"></div>
+        <div class="hints" onclick="onHintClick()"></div>
+        <div class="safe-click" onclick="onSafeClick()">Safe Click </br>
+        <span></span> clicks available</div>
       <table>
         <tbody></tbody>
       </table>
+      <div class="best-score">Best time: <span></span> sec</div>
     </div>
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
