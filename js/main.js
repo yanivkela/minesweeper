@@ -8,7 +8,7 @@ var gMines = []
 var gBoard
 var gHint = {}
 var gManuallyCreateMinesLeft = 0
-
+var gMegaHint = {}
 
 function initGame() {
   gBoard = buildBoard(gLevel.SIZE)
@@ -22,6 +22,9 @@ function initGame() {
   gHint.hintsLeft = 3
   gHint.isHint = false
   gHint.safeClicksLeft = 3
+  gMegaHint.available = true
+  gMegaHint.isOn = false
+  gMegaHint.cells = []
   document.querySelector('.safe-click span').innerText = gHint.safeClicksLeft
   document.querySelector('.best-score span').innerText = loadFromLocalStorage()
   document.querySelector('.hints').innerText = '💡💡💡'
@@ -29,6 +32,9 @@ function initGame() {
   document.querySelector('.timer').innerText = gGame.secsPassed
   document.querySelector('.smiley').innerText = '😃'
   document.querySelector('.flags-left').innerText = gLevel.MINES - gGame.markedCount
+  document.querySelector('.mega-hint').style.backgroundColor = ''
+  document.querySelector('.seven-boom').style.backgroundColor = ''
+  document.querySelector('.manually-create').style.backgroundColor = ''
 }
 
 function buildBoard(size) {
@@ -81,17 +87,19 @@ function cellClicked(elCell, idx, jdx) {
     if (gBoard[idx][jdx].isMine) return
     gBoard[idx][jdx].isMine = true
     elCell.innerText = '💣'
-    gMines.push({i:idx, j: jdx})
+    gMines.push({ i: idx, j: jdx })
     gManuallyCreateMinesLeft--
     if (!gManuallyCreateMinesLeft) {
       setMinesNegsAround(gBoard)
       setTimeout(() => {
-        for (var i = 0 ; i < gMines.length; i++) {
+        for (var i = 0; i < gMines.length; i++) {
           var currMine = gMines[i]
-          var elMine = document.querySelector(`.cell-${currMine.i}-${currMine.j}`)
+          var elMine = document.querySelector(
+            `.cell-${currMine.i}-${currMine.j}`
+          )
           elMine.innerText = ''
         }
-      },250)
+      }, 250)
     }
     return
   }
@@ -105,6 +113,39 @@ function cellClicked(elCell, idx, jdx) {
     showHint(idx, jdx)
     return
   }
+
+  if (gMegaHint.isOn) {
+    gMegaHint.cells.push({ i: idx, j: jdx })
+    if (gMegaHint.cells.length !== 2) return
+    var startCell = gMegaHint.cells[0]
+    var endCell = gMegaHint.cells[1]
+    for (var i = startCell.i; i <= endCell.i; i++) {
+      for (var j = startCell.j; j <= endCell.j; j++) {
+        curCell = gBoard[i][j]
+        if (curCell.isMarked || curCell.isShown) continue
+        if (gBoard[i][j].isMine) {
+          document.querySelector(`.cell-${i}-${j}`).innerText = '💣'
+        } else if (gBoard[i][j].minesAroundCount) {
+          document.querySelector(`.cell-${i}-${j}`).innerText =
+            gBoard[i][j].minesAroundCount
+        }
+        document.querySelector(`.cell-${i}-${j}`).style.backgroundColor = 'rgb(217, 145, 20)'
+        setTimeout(
+          (loc) => {
+            if (!gBoard[loc.i][loc.j].isShown) {
+              document.querySelector(`.cell-${loc.i}-${loc.j}`).innerText = ''
+            }
+            document.querySelector(`.cell-${loc.i}-${loc.j}`).style.backgroundColor = ''
+          },
+          2000,
+          { i: i, j: j }
+        )
+      }
+    }
+    gMegaHint.isOn = false
+    return
+  }
+
   if (!gGame.shownCount) {
     gTimeInterval = setInterval(() => {
       gGame.secsPassed++
@@ -113,19 +154,21 @@ function cellClicked(elCell, idx, jdx) {
     }, 1000)
   }
 
+
   var curCell = gBoard[idx][jdx]
   if (curCell.isMarked || curCell.isShown) return
   if (curCell.isMine) {
-    if (gGame.lives > 0) {
+    if (gGame.lives > 1) {
       elCell.innerText = '💣'
       setTimeout(
-        (elCell,curCell) => {
+        (elCell, curCell) => {
           if (elCell.innerText === '💣' && !curCell.isShown) {
             elCell.innerText = ''
           }
         },
         2000,
-        elCell, curCell
+        elCell,
+        curCell
       )
       gGame.lives--
       var strLives = ''
@@ -135,6 +178,7 @@ function cellClicked(elCell, idx, jdx) {
       document.querySelector('.lives').innerText = strLives
       return
     } else {
+      document.querySelector('.lives').innerText = ''
       onGameOver(false)
       return
     }
@@ -252,7 +296,7 @@ function cellMarked(ev, elCell, idx, jdx) {
     gGame.markedCount--
   }
   var elFlags = document.querySelector('.flags-left')
-  elFlags.innerText = gLevel.MINES - gGame.markedCount
+  elFlags.innerText = gMines.length - gGame.markedCount
 }
 
 function onHintClick() {
@@ -276,19 +320,53 @@ function onSafeClick() {
     `.cell-${randEmptyCell.i}-${randEmptyCell.j}`
   )
   elEmpttyCell.style.backgroundColor = '#ae8617'
-  setTimeout((randEmptyCell) => {
-    // if (gBoard[randEmptyCell.i][randEmptyCell.j].isShown) return
-    var elEmpttyCell = document.querySelector(
-      `.cell-${randEmptyCell.i}-${randEmptyCell.j}`
-    )
-    elEmpttyCell.style.backgroundColor = ''
-  }, 3000,randEmptyCell)
+  setTimeout(
+    (randEmptyCell) => {
+      // if (gBoard[randEmptyCell.i][randEmptyCell.j].isShown) return
+      var elEmpttyCell = document.querySelector(
+        `.cell-${randEmptyCell.i}-${randEmptyCell.j}`
+      )
+      elEmpttyCell.style.backgroundColor = ''
+    },
+    3000,
+    randEmptyCell
+  )
 }
 
 function onManuallyCreate() {
   clearInterval(gTimeInterval)
   gManuallyCreateMinesLeft = gLevel.MINES
   initGame()
+  document.querySelector('.manually-create').style.backgroundColor = 'rgb(145, 145, 145)'
+}
+
+function onSevenBoom() {
+  clearInterval(gTimeInterval)
+  initGame()
+  document.querySelector('.seven-boom').style.backgroundColor = 'rgb(145, 145, 145)'
+  var cells = []
+  for (var i = 0; i < gBoard.length; i++) {
+    for (var j = 0; j < gBoard[0].length; j++) {
+      cells.push({ i: i, j: j })
+    }
+  }
+  for (var idx = 0; idx < cells.length; idx++) {
+    if (!idx) continue
+    if (idx % 7 === 0) {
+      curCell = cells[idx]
+      gMines.push(curCell)
+      gBoard[curCell.i][curCell.j].isMine = true
+    }
+  }
+  document.querySelector('.flags-left').innerText = gMines.length
+  setMinesNegsAround(gBoard)
+}
+
+function onMegaHint() {
+  if (!gMegaHint.available) return
+  gMegaHint.available = false
+  gMegaHint.isOn = true
+  document.querySelector('.mega-hint').style.backgroundColor = 'rgb(145, 145, 145)'
 }
 
 function onGameOver(isVictory) {
